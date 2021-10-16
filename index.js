@@ -52,8 +52,7 @@ async function onTypeClick(event, typesUrl) {
   createTypeList(typesArray);
 }
 
-async function onButtonClick(event) {
-  event.preventDefault();
+async function searchPokimonInput() {
   let errorMsg = document.getElementById("errorMsg");
   let liveCard = document.getElementById("liveCard");
   if (errorMsg !== null) {
@@ -77,6 +76,25 @@ async function onButtonClick(event) {
   }
 }
 
+function onButtonClick(event) {
+  event.preventDefault();
+  searchPokimonInput();
+}
+
+function onLiEnter(event) {
+  event.target.classList.add("bg-info", "text-white");
+}
+
+function onLiLeave(event) {
+  event.target.classList.remove("bg-info", "text-white");
+}
+
+function onTypeListClick(event) {
+  let searchInput = document.querySelector("#search");
+  searchInput.value = event.target.textContent;
+  searchPokimonInput();
+}
+
 // ===================================
 // ======= DOM Functions =============
 // ===================================
@@ -88,11 +106,33 @@ function errorMassage(massage) {
   document.getElementById("errorDiv").append(textSpam);
 }
 
+function getLiEventListeners() {
+  return {
+    mouseenter: (event) => {
+      onLiEnter(event);
+    },
+    mouseleave: (event) => {
+      onLiLeave(event);
+    },
+    click: (event) => {
+      onTypeListClick(event);
+    },
+  };
+}
+
 function createTypeList(pokimonsTypesArray) {
   let modalBody = document.querySelector("#modalBody");
   let pokimonsArray = [];
   pokimonsTypesArray.forEach((pokimon) => {
-    pokimonsArray.push(createElement("li", [pokimon.pokemon.name]));
+    pokimonsArray.push(
+      createElement(
+        "li",
+        [pokimon.pokemon.name],
+        [],
+        { style: "cursor:pointer", "data-dismiss": "modal" },
+        getLiEventListeners()
+      )
+    );
   });
   let typesUl = createElement("ul", [...pokimonsArray]);
   modalBody.append(typesUl);
